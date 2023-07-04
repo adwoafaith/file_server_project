@@ -25,9 +25,9 @@ const userSchema = new Schema ({
         enum :['user','admin'], 
         default: 'user'
     },
-    // passwordChangedAt:Date,
-    // passwordResetToken: String,
-    // passwordResetTokenExpires:Date
+    passwordChangedAt:Date,
+    passwordResetToken: String,
+    passwordResetTokenExpires:Date
 },{timestamps:true})
 
 //instance method
@@ -46,7 +46,7 @@ userSchema.post('save',function(doc,next){
     console.log('new user was created & saved',doc)
     next();
 })
-//fire a function before dot saved to db
+//hasing the user password
 userSchema.pre('save',async function(next) {
    const salt = await bcrypt.genSalt();
    this.password = await bcrypt.hash(this.password,salt)

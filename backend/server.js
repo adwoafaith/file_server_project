@@ -4,34 +4,25 @@ const cookieParser = require('cookie-parser')
 const connect = require('mongoose').connect
 const dbConnect = require('./db')
 const cors = require('cors')
-
 require('dotenv').config()
 
-//authentication route
+//importation of routes
 const authRoute = require('./routes/auth')
-
-//view engine
- app.set('view engine', 'ejs')
-
-//user routes
 const userRoutes = require('./routes/userFileRoutes')
 const adminRoute = require('./routes/adminFileRoutes')
-
-const uri = process.env.MONGO_URI
-const port = process.env.PORT || 7000
 
 //middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors())
-app.use('/user',authRoute)
+app.set('view engine', 'ejs')
 
-//admin middleware
-app.use('/upload', adminRoute)
-//app.use('/uploads',express.static('uploads'))
+app.use('/user',authRoute)//authentication route
+app.use('/upload', adminRoute) //admin route
+app.use(userRoutes) //user routes
 
-//user middleware
-app.use(userRoutes)
+const uri = process.env.MONGO_URI
+const port = process.env.PORT || 7000
 
 const server = app.listen(port,() =>{
     console.log(`listening on port ${port}`)

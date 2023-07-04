@@ -1,7 +1,7 @@
 const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const sendEmail = require('../emailTransporter/email')
+const sendEmail = require('../utils/email')
 const businessDistribution = require('../models/file')
 const { genToken } = require('../utils/access-token')
 
@@ -77,28 +77,59 @@ const login = async (req, res, next) => {
         })
     }
 }
-
-
-
-
-const signup_get = (req, res) => {
-    res.render('signup');
-}
-const login_get = (req, res) => {
-    res.render('Login')
-}
-const login_post = (req, res) => {
-    const { email, password } = req.body;
-    console.log(email, password)
-
-}
+const forgotPassword = async(req, res, next) =>{
+     //getting the user based on the provided email
+     const {email} = req.body;
+     const user = await User.findOne({email})
+     if (!user){
+        return res.status(404).json({
+            message: "No user exists with email"
+        })
+     }
+     //generate a random reset token
+     const resetToken = user.createResetPasswordToken();
+     await user.save({validateBeforeSave:false});
+     //send the token to the user email
+     const resetUrl = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`;
+     const message = `we have received a password request.Use the below link to reset password \n\n${resetUrl}\n\n link is available for only 10 minute`;
+     try{
+    
+         await sendEmail({
+            email:user.email,
+            subject:'Password change request received',
+            message:message
+         });
+         res.status(200).json({status:'success',
+         message:`Password reset link send to the user email`})
+     }
+     catch(error){
+        user.passwordResetToken = undefined;
+        user.passwordResetTokenExpires = undefined
+        user.save({validateBeforeSave:false});
+    
+        res.status(500).json({message:`There was an error sending password reset email.Please try again later`,error:error.message})
+     }
+      
+    }
+    console.log(sendEmail)
+    
+    const resetPassword = async(req,res, next) => {
+    
+    }
+    
+    const restrict = async(role) =>{
+        //sellect the user based on the password reset token
+        //User.findOne(())
+        return (req, res, next)
+         
+    }
 
 
 module.exports =
 {
     login,
-    signup_get,
-    login_get,
     signup_post,
-    login_post
-}
+    forgotPassword,
+    resetPassword
+
+    }
