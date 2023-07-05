@@ -80,6 +80,7 @@ const login = async (req, res, next) => {
 const forgotPassword = async(req, res, next) =>{
      //getting the user based on the provided email
      const {email} = req.body;
+     console.log(email)
      const user = await User.findOne({email})
      if (!user){
         return res.status(404).json({
@@ -115,7 +116,10 @@ const forgotPassword = async(req, res, next) =>{
     
     const resetPassword = async(req,res, next) => {
         const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
-        const user = await User.findOne({passwordResetToken:token,passwordResetTokenExpires:{$gt:Date.now()}})
+        const user = await User.findOne({
+            passwordResetToken
+            :token,
+            passwordResetTokenExpires:{$gt:Date.now()}})
 
         if (!user)
         {
@@ -138,13 +142,7 @@ const forgotPassword = async(req, res, next) =>{
             token :loginToken          
         });   
     }
-    
-    const restrict = async(role) =>{
-        //sellect the user based on the password reset token 
-        //User.findOne(())
-        return (req, res, next)
-         
-    }
+
 
 
 module.exports =

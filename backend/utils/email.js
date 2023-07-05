@@ -1,13 +1,14 @@
 const nodemailer = require('nodemailer')
 
+const user = process.env.USER
+const password =  process.env.APP_PASSWORD
 const sendEmail = async(option) =>{
     //transporter
     const transporter = nodemailer.createTransport({
-       host: process.env.EMAIL_HOST,
-       port: process.env.EMAIL_PORT,
+       service: "Gmail",
        auth:{
-        user:process.env.EMAIL_HOST,
-        pass: process.env.EMAIL_PASSWORD
+        user:user,
+        pass: password
        }
     })
     //email options
