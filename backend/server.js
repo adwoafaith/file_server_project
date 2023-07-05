@@ -24,6 +24,9 @@ app.use(userRoutes) //user routes
 const uri = process.env.MONGO_URI
 const port = process.env.PORT || 7000
 
+//homepage
+console.log('i am fine')
+
 const server = app.listen(port,() =>{
     console.log(`listening on port ${port}`)
     dbConnect(uri)
