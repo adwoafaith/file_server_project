@@ -3,17 +3,20 @@ import React from 'react'
 import { useState } from 'react';
 
 const Dashboard = () => {
-    const [file, setFile] = useState(null)
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
 
     const getFile = (e) => {
-        const formdata = new FormData()
-        setFile(formdata.get(e.target.value))
     }
 
     const handleSubmit = () => {
-        axios.post('http://localhost:8000/upload/addFile', {title, description, file}, {
+        const formdata = new FormData()
+        formdata.append('file', document.getElementById('file').files[0])
+        formdata.append('title', title)
+        formdata.append('description', description)
+
+        console.log(formdata)
+        axios.post('http://localhost:8000/upload/addFile', formdata, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Accept': 'application/json'
@@ -23,10 +26,10 @@ const Dashboard = () => {
 
     return (
         <>
-            <input type="text" placeholder='Title' onChange={(e) => setTitle(e.target.value)}/>
-            <input type="text" placeholder='Description' onChange={(e) => setDescription(e.target.value)}/>
-            <input type="file"  onChange={getFile} value={file}/>
-            <input type="submit" onClick={handleSubmit}/>
+            <input type="text" placeholder='Title' onChange={(e) => setTitle(e.target.value)} />
+            <input type="text" placeholder='Description' onChange={(e) => setDescription(e.target.value)} />
+            <input type="file" onChange={getFile} id='file' />
+            <input type="submit" onClick={handleSubmit} />
         </>
     );
 }

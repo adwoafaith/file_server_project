@@ -114,11 +114,33 @@ const forgotPassword = async(req, res, next) =>{
     console.log(sendEmail)
     
     const resetPassword = async(req,res, next) => {
-    
+        const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
+        const user = await User.findOne({passwordResetToken:token,passwordResetTokenExpires:{$gt:Date.now()}})
+
+        if (!user)
+        {
+            res.status(400).json({
+                message: 'token is invalid or has expired'
+            })
+        }
+        //reseting the password
+        user.password = req.body.password;
+        user.confirmPassword = req.body.password;
+        user.passwordResetToken = undefined;
+        user.passwordResetTokenExpires = undefined;
+        user.passwordChangedAt = Date.now();
+        user.save();
+
+        //after resetting the password login the user automatically
+        let loginToken = genToken({email,  role:user.role})
+        return res.status(200).json({
+            message: "login Successful",
+            token :loginToken          
+        });   
     }
     
     const restrict = async(role) =>{
-        //sellect the user based on the password reset token
+        //sellect the user based on the password reset token 
         //User.findOne(())
         return (req, res, next)
          
