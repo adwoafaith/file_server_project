@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 const sendEmail = require('../utils/email')
 const businessDistribution = require('../models/file')
 const { genToken } = require('../utils/access-token')
-
+const crypto = require('crypto')
 //handle errors
 const handleErrors = (err) => {
     // console.log('heelo', err.message, err.code)
@@ -81,7 +81,10 @@ const forgotPassword = async(req, res, next) =>{
      //getting the user based on the provided email
      const {email} = req.body;
      console.log(email)
+     console.log(email)
+     //find the user by email
      const user = await User.findOne({email})
+     console.log(email)
      if (!user){
         return res.status(404).json({
             message: "No user exists with email"
@@ -91,7 +94,7 @@ const forgotPassword = async(req, res, next) =>{
      const resetToken = user.createResetPasswordToken();
      await user.save({validateBeforeSave:false});
      //send the token to the user email
-     const resetUrl = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`;
+     const resetUrl = `http://localhost:8000/user/resetPassword/${resetToken}\n\n`
      const message = `we have received a password request.Use the below link to reset password \n\n${resetUrl}\n\n link is available for only 10 minute`;
      try{
     
@@ -114,14 +117,12 @@ const forgotPassword = async(req, res, next) =>{
     }
     console.log(sendEmail)
     
-    const resetPassword = async(req,res, next) => {
-        const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
-        const user = await User.findOne({
-            passwordResetToken
-            :token,
-            passwordResetTokenExpires:{$gt:Date.now()}})
-
-        if (!user)
+    const resetPassword = async(req, res, next) => {
+        const token = crypto.createHash('sha256').update(req.params.token).digest('hex');
+        console.log(token)
+        const user = await User.findOne({passwordResetToken:token,passwordResetTokenExpires:{$gt:Date.now()}})
+try {
+         if (!user)
         {
             res.status(400).json({
                 message: 'token is invalid or has expired'
@@ -129,18 +130,26 @@ const forgotPassword = async(req, res, next) =>{
         }
         //reseting the password
         user.password = req.body.password;
-        user.confirmPassword = req.body.password;
         user.passwordResetToken = undefined;
         user.passwordResetTokenExpires = undefined;
         user.passwordChangedAt = Date.now();
         user.save();
 
         //after resetting the password login the user automatically
-        let loginToken = genToken({email,  role:user.role})
+        const loginToken = genToken({email,role:user.role})
         return res.status(200).json({
             message: "login Successful",
             token :loginToken          
         });   
+                
+} catch (error) {
+                res.status(400).json({
+                    message:'something went wrong',
+                    error:error.message
+                })
+                
+            }
+        
     }
 
 

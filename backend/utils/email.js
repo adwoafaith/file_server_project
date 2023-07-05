@@ -13,7 +13,7 @@ const sendEmail = async(option) =>{
     })
     //email options
     const emailOptions = {
-        from: 'Adwoa support<support@adwoa.com>',
+        from: 'Adwoa TrainingSkills<Training@adwoa.com>',
         to: option.email,
         subject:option.subject,
         text: option.message
