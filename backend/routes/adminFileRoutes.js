@@ -5,6 +5,7 @@ const controllerAdmin = require('../controllers/controllerAdmin')
 const upload = require('../fileMiddleware/upload')
 const { adminAccess } = require('../utils/permissions')
 
-router.post('/addFile', adminAccess, upload.array('myFile[]'), controllerAdmin.addFile)
+router.post('/addFile', adminAccess, upload.single('myFile'), controllerAdmin.addFile)
+router.get('/counts', adminAccess, controllerAdmin.getCounts)
 
 module.exports = router

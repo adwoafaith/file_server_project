@@ -11,7 +11,18 @@ const businessDistributionSchema = new Schema ({
         type: String,
     },
     myFile:{
-        type: String,
+        type: Buffer,
+    },
+    contentType: {
+      type: String,
+    },
+    emailCount: {
+        type: Number,
+        default: 0
+    },
+    downloadCount: {
+        type: Number,
+        default: 0
     }
 },{timestamps:true})
 

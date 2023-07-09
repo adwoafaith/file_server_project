@@ -19,7 +19,7 @@ const userAccess = async (req, res, next) => {
         const user = verifyToken(req.headers.authorization.split(' ')[1]);
 
         const currentUser =  await User.findOne({email: user.email})
-        if(currentUser.role === 'user') next()
+        if(currentUser.role === 'user' || currentUser.role === 'admin') next()
         else return res.status(401).json({message: 'UnAuthorized'})
     } catch (error) {
         return res.status(401).json({message: error.message ? error.message : 'Internal Server Error'})

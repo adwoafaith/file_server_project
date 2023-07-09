@@ -27,10 +27,10 @@ const handleErrors = (err) => {
 
 //registration function
 const signup_post = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
   //console.log(email,password)
   try {
-    const user = await User.create({ email, password });
+    const user = await User.create({ email, role, password });
     res.status(201).json({ message: "Registered sucessfully" });
   } catch (err) {
     res.status(400).json({ ...handleErrors(err) });
@@ -104,6 +104,9 @@ const forgotPassword = async (req, res) => {
 
     const mail_name = process.env.USER_NAME;
     const password = process.env.APP_PASSWORD;
+    console.log(mail_name)
+    console.log(password)
+
 
     //transporter create a transporter
     const transporter = nodemailer.createTransport({
@@ -146,14 +149,18 @@ const forgotPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   const { token } = req.params;
+  const { password } = req.body;
+
   console.log(token)
   console.log(password)
+
   try {
     //find user by toke and the duration the token expires
     const user = await User.findOne({
       passwordResetToken: token,
       passwordResetTokenExpires: { $gt: Date.now() },
     });
+    console.log(user);
     if (!user) {
       return res
         .status(400)
