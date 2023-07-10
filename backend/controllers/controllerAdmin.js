@@ -9,7 +9,8 @@ const addFile = async (req, res, next) => {
     title: req.body.title,
     description: req.body.description,
     myFile: Buffer.from(req.file.toString("base64"), "base64"),
-    contentType: req.file.mimetype
+    contentType: req.file.mimetype,
+    filename: req.file.filename
   });
   await userAdd
     .save()

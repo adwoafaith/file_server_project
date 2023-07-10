@@ -10,9 +10,13 @@ const SignupPage = () => {
     const navigate = useNavigate()
 
     const handleSignUp = async (e) => {
+        
+        console.log(email)
+        console.log(password)
         e.preventDefault();
         try {
             const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/signup`, {email, password})
+            console.log(response)
              alert(response.data.message)
              navigate('/login')
          } catch (error) {

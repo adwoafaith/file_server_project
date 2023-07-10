@@ -6,7 +6,7 @@ const { findOne } = require("../models/user");
 
 //show all file
 const findAllFiles = async (req, res, next) => {
-  businessDistribution
+  await businessDistribution
     .find()
     .then((response) => {
       res.status(200).json({ response });
@@ -108,10 +108,24 @@ const sendEmail = async (req, res) => {
 
 
 
-const downloadFile = (req, res) => {
+const downloadFile = async (req, res) => {
   // TODO: implement the file download....
-  
+  const fileId = req.params.id;
+
+  try{
+    const file = await businessDistribution.findById(fileId);
+    if(!file){
+      return res.status(404).json({message: "file does not exist"})
+    }
+
+    console.log(file)
+    res.download(`./uploads/${file.filename}`);
+  }catch(err){
+    return res.status(500).json({message: "Internal Server Error", err:err.message})
+  }
 };
+
+
 
 module.exports = {
   findAllFiles,

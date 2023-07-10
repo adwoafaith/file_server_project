@@ -16,6 +16,7 @@ const LoginPage = () => {
             const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/login`, {email, password})
              alert(response.data.message)
              localStorage.setItem('token', response.data.token)
+             localStorage.setItem('role', response.data.role)
              navigate('/dashboard')
          } catch (error) {
              alert(error.message)

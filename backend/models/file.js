@@ -10,6 +10,9 @@ const businessDistributionSchema = new Schema ({
     description:{
         type: String,
     },
+    filename: {
+        type: String,
+    },
     myFile:{
         type: Buffer,
     },
