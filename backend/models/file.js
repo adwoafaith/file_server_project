@@ -14,7 +14,7 @@ const businessDistributionSchema = new Schema ({
         type: String,
     },
     myFile:{
-        type: Buffer,
+        type: String,
     },
     contentType: {
       type: String,

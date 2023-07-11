@@ -47,12 +47,9 @@ const findFiletitle = async (req, res, next) => {
 const sendEmail = async (req, res) => {
   const { id } = req.params;
   const { email } = req.body;
-  console.log(id);
-  console.log(email);
   // TODO: Use nodemailer to mail the file to the above email
   try {
     const file = await businessDistribution.findById(id);
-    console.log(file);
     if (!file) {
       return res
         .status(400)
@@ -60,8 +57,6 @@ const sendEmail = async (req, res) => {
     }
     const mail = process.env.USER_NAME;
     const password = process.env.APP_PASSWORD;
-    console.log(`mail ${mail}`);
-    console.log(`password ${password}`);
 
     const transporter = nodemailer.createTransport({
       service: "Gmail",
@@ -86,7 +81,6 @@ const sendEmail = async (req, res) => {
     };
     transporter.sendMail(message, async (error, info) => {
       if (error) {
-        console.log(error);
         return res
           .status(400)
           .json({ sucess: false, message: "Email not send" });
