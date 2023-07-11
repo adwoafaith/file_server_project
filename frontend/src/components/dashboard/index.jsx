@@ -9,9 +9,9 @@ const Dashboard = () => {
     const [files, setFiles] = useState([])
     const [fullScreenImage, setFullScreenImage] = useState(null);
 
-    const handleImageClick = (event) => {
-        const imageUrl = event.target.src;
-        setFullScreenImage(imageUrl);
+    const handleImageClick = (index) => {
+        const imageSrc = document.getElementById(index).src
+        setFullScreenImage(imageSrc);
     };
 
     const handleCloseClick = () => {
@@ -47,7 +47,7 @@ const Dashboard = () => {
 
     return (
         <>
-            <form className='dash-form'>
+            <form className='dash-form' onSubmit={(e) => e.preventDefault() }>
                 <h1>Upload a file</h1>
                 {localStorage.getItem('role') === "admin" ?
                     <>
@@ -72,9 +72,9 @@ const Dashboard = () => {
                                         <span>{file.description}</span>
                                         <div className='file-image'>
                                             <div className='image'>
-                                                <img src={`data:image/${file.filename.split('.')[1]};base64,${file.myFile}`} alt="" onClick={handleImageClick} />
+                                                <img id={index} src={`data:image/${file.filename.split('.')[1]};base64,${file.myFile}`} alt="" onClick={handleImageClick} />
                                             </div>
-                                            <button>Preview</button>
+                                            <button onClick={() => handleImageClick(index)} style={{cursor: 'pointer'}}>Preview</button>
                                         </div>
                                     </div>
                                 )
