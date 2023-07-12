@@ -97,7 +97,7 @@
 }
 
 
-.logout {
+.logout{
     position: absolute;
     right: 180px;
     top: 70px;
@@ -108,4 +108,38 @@
     padding: 12px;
     font-size: 16px;
     cursor: pointer;
+}
+
+.shareBtn{
+    background-color: dodgerblue;
+    border: 1px solid dodgerblue;
+    color: white;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.share-window{
+    display: flex;
+    gap: 10px;
+    width: 70%;
+    height: auto;
+    background-color: #ddd;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.share-window input{
+    padding: 7px;
+    font-size: 16px;
+    width: 50%;
+}
+
+.close{
+    color: #ff0000;
+    font-size: 30px;
+    position: absolute;
+    top: 70px;
+    right: 150px;
 }

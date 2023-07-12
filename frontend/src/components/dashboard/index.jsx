@@ -2,8 +2,12 @@ import axios from 'axios';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import './style.css'
+import { useNavigate } from 'react-router-dom';
+
 
 const Dashboard = () => {
+    const navigate = useNavigate()
+
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [files, setFiles] = useState([])
@@ -45,9 +49,15 @@ const Dashboard = () => {
         })
     }
 
+    const handleLogout = () => {
+        localStorage.removeItem('token')
+        navigate('/login')
+    }
+
     return (
         <>
-            <form className='dash-form' onSubmit={(e) => e.preventDefault() }>
+            <button className='logout' onClick={handleLogout}>Logout</button>
+            <form className='dash-form' onSubmit={(e) => e.preventDefault()}>
                 <h1>Upload a file</h1>
                 {localStorage.getItem('role') === "admin" ?
                     <>
@@ -72,9 +82,9 @@ const Dashboard = () => {
                                         <span>{file.description}</span>
                                         <div className='file-image'>
                                             <div className='image'>
-                                                <img id={index} src={`data:image/${file.filename.split('.')[1]};base64,${file.myFile}`} alt="" onClick={handleImageClick} />
+                                                <img id={index} src={`data:image/${file?.filename?.split('.')[1]};base64,${file.myFile}`} alt="" onClick={() => handleImageClick(index)} />
                                             </div>
-                                            <button onClick={() => handleImageClick(index)} style={{cursor: 'pointer'}}>Preview</button>
+                                            <button onClick={() => handleImageClick(index)} style={{ cursor: 'pointer' }}>Preview</button>
                                         </div>
                                     </div>
                                 )

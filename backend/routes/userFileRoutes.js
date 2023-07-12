@@ -8,5 +8,4 @@ router.get ('/fileTitle', userAccess,controllerUser.findFiletitle);
 router.post('/sendEmail/:id', userAccess, controllerUser.sendEmail);
 router.get('/file/download/:id', userAccess,  controllerUser.downloadFile);
 
-
 module.exports = router;

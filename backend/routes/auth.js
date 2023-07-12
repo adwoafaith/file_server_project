@@ -5,7 +5,7 @@ const authController = require('../controllers/authController')
 
 router.post('/signup',authController.signup_post)
 router.post('/login',authController.login)
-router.post('/fogotPassword',authController.forgotPassword)
+router.post('/forgotPassword',authController.forgotPassword)
 router.patch('/resetPassword/:token',authController.resetPassword)
 
 module.exports = router;
