@@ -3,7 +3,6 @@ import './styles.css'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import jwt_decode from "jwt-decode";
 
 const LoginPage = () => {
     const [email, setEmail] = useState('')
@@ -20,6 +19,7 @@ const LoginPage = () => {
             const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/user/login`, { email, password })
             alert(response.data.message)
             localStorage.setItem('token', response.data.token)
+            localStorage.setItem('role', response.data.role)
 
             if (localStorage.getItem('role') === 'admin') navigate('/dashboard')
             if (localStorage.getItem('role') === 'user') navigate('/user')

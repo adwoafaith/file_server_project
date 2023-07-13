@@ -12,6 +12,8 @@ const Dashboard = () => {
     const [reciepient, setReciepient] = useState('');
     const [imageIndex, setImageIndex] = useState('');
     const [fileId, setFileId] = useState('');
+    const [action, showAction] = useState(false);
+    const [download, setDownload] = useState('');
 
     const handleImageClick = (index) => {
         const imageSrc = document.getElementById(index).src
@@ -39,6 +41,15 @@ const Dashboard = () => {
         setImageIndex(index)
         setFileId(id)
         setshareScreen(!shareScreen)
+    }
+
+    const handleDownload = (id) => {
+        axios.get(`${process.env.REACT_APP_BASE_URL}/file/download/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Accept': 'application/json'
+            }
+        }).then(res => setDownload(res.data))
     }
 
     const handleLogout = () => {
@@ -83,8 +94,13 @@ const Dashboard = () => {
                                         <div className='image'>
                                             <img id={index} src={`data:image/${file?.filename?.split('.')[1]};base64,${file.myFile}`} alt="" onClick={() => handleImageClick(index)} />
                                         </div>
-                                        <button onClick={() => handleImageClick(index)} style={{ cursor: 'pointer' }}>Preview</button>
-                                        <button onClick={() => handleShare(index, file._id)} style={{ cursor: 'pointer' }}>Share</button>
+                                        <span className="spanner" onClick={() => showAction(!action)}>Action</span>
+                                        <div className='actions' style={{ display: action ? 'block' : 'none' }}>
+                                            <button onClick={() => handleImageClick(index)} style={{ cursor: 'pointer' }}>Preview</button>
+                                            <button onClick={() => handleShare(index, file._id)} style={{ cursor: 'pointer' }}>Share</button>
+                                            {/*<button onClick={() => handleDownload(file._id)} style={{ cursor: 'pointer' }}>Download</button>*/}
+                                            <a href="/#" id='download' onClick={handleDownload} download={download ? download : null}>Download</a>
+                                        </div>
                                     </div>
                                 </div>
                             )
@@ -98,7 +114,7 @@ const Dashboard = () => {
                 </div>
             )}
             {shareScreen && (
-                <div className="fullscreen-overlay">
+                <div className="fullscreen-share-overlay">
                     <span onClick={() => setshareScreen(!shareScreen)} className='close'>X</span>
                     <div className='share-window'>
                         <h2>Share a file with your friends and network</h2>

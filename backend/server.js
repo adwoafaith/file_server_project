@@ -10,6 +10,7 @@ require('dotenv').config()
 const authRoute = require('./routes/auth')
 const userRoutes = require('./routes/userFileRoutes')
 const adminRoute = require('./routes/adminFileRoutes')
+const seedUsers = require('./db/seeder')
 
 //middlewares
 app.use(express.json());
@@ -27,7 +28,9 @@ const port = process.env.PORT || 7000
 const server = app.listen(port,() =>{
     console.log(`listening on port ${port}`)
     dbConnect(uri)
-    .then(()=> console.log('connected to database'))
+    .then(()=> {
+        console.log('connected to database')
+    })
     .catch(err => console.error(err))
 
     // //handling errors if not connected

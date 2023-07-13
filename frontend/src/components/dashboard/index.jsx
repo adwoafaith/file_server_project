@@ -23,7 +23,7 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:8000/findfile', {
+        axios.get(`${process.env.REACT_APP_BASE_URL}/findfile`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Accept': 'application/json'
@@ -41,7 +41,7 @@ const Dashboard = () => {
         formdata.append('title', title)
         formdata.append('description', description)
 
-        await axios.post('http://localhost:8000/upload/addFile', formdata, {
+        await axios.post(`${process.env.REACT_APP_BASE_URL}/upload/addFile`, formdata, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Accept': 'application/json'

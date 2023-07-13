@@ -1,10 +1,10 @@
 const express = require('express')
 const  controllerUser= require('../controllers/controllerUser')
-const {userAccess, adminAccess} = require('../utils/permissions')
+const { userAccess, adminAccess, generalAccess } = require('../utils/permissions')
 const router = express.Router()
 
-router.get('/findfile', userAccess, controllerUser.findAllFiles);
-router.get ('/fileTitle', userAccess,controllerUser.findFiletitle);
+router.get('/findfile', generalAccess, controllerUser.findAllFiles);
+router.get('/fileTitle', generalAccess,controllerUser.findFiletitle);
 router.post('/sendEmail/:id', userAccess, controllerUser.sendEmail);
 router.get('/file/download/:id', userAccess,  controllerUser.downloadFile);
 

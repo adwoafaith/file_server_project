@@ -78,7 +78,7 @@
     padding: 8px;
 }
 
-.fullscreen-overlay {
+.fullscreen-share-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -122,6 +122,7 @@
 
 .share-window{
     display: flex;
+    flex-direction: column;
     gap: 10px;
     width: 70%;
     height: auto;
@@ -142,4 +143,9 @@
     position: absolute;
     top: 70px;
     right: 150px;
+}
+
+.actions{
+    display: flex !important;
+    gap: 10px;
 }
