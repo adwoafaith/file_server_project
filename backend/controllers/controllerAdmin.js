@@ -1,10 +1,12 @@
 const businessDistribution = require("../models/file");
 const cloudinary = require('cloudinary');
+const dotenv = require('dotenv')
+dotenv.config();
 
 cloudinary.v2.config({
     cloud_name: 'dxclgkewn',
-    api_key: '268165714611856',
-    api_secret: 'XztvrLu5H1irDym1EpdICqpmOrc',
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
     secure: true,
 });
 
