@@ -7,22 +7,14 @@ import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
     const navigate = useNavigate()
     const [files, setFiles] = useState([])
-    const [fullScreenImage, setFullScreenImage] = useState(null);
+    const [fullScreenImage, setFullScreenImage] = useState(false);
     const [shareScreen, setshareScreen] = useState(false);
     const [reciepient, setReciepient] = useState('');
-    const [imageIndex, setImageIndex] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
     const [fileId, setFileId] = useState('');
     const [action, showAction] = useState(false);
-    const [download, setDownload] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleImageClick = (index) => {
-        const imageSrc = document.getElementById(index).src
-        setFullScreenImage(imageSrc);
-    };
-
-    const handleCloseClick = () => {
-        setFullScreenImage(null);
-    };
 
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_BASE_URL}/findfile`, {
@@ -32,25 +24,22 @@ const Dashboard = () => {
             }
         })
             .then(res => {
-                setFiles(res.data.response)
+                setFiles(res.data.response.reverse())
             })
             .catch(err => console.error(err))
-    }, [])
+    }, [files])
 
-    const handleShare = (index, id) => {
-        setImageIndex(index)
+    const handleShare = (url, id) => {
+        setImageUrl(url)
         setFileId(id)
         setshareScreen(!shareScreen)
     }
 
-    const handleDownload = (id) => {
-        axios.get(`${process.env.REACT_APP_BASE_URL}/file/download/${id}`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Accept': 'application/json'
-            }
-        }).then(res => setDownload(res.data))
+    const handlePreview = (url) => {
+        setImageUrl(url)
+        setFullScreenImage(true)
     }
+
 
     const handleLogout = () => {
         localStorage.removeItem('token')
@@ -58,6 +47,7 @@ const Dashboard = () => {
     }
 
     const shareFile = () => {
+        setIsLoading(true)
         axios.post(`${process.env.REACT_APP_BASE_URL}/sendEmail/${fileId}`, { email: reciepient }, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -65,14 +55,32 @@ const Dashboard = () => {
             }
         })
             .then(res => {
+                setIsLoading(false)
                 setshareScreen(false)
                 alert(res.data.message)
                 setReciepient('')
-
             })
             .catch(err => console.error(err))
     }
 
+    const handleDownload = async (id, file) => {
+        const link = document.createElement('a');
+        link.href = file
+        link.download = `imagefile.${file.split('.')[1]}`
+        link.click()
+
+        try {
+            await axios.get(`${process.env.REACT_APP_BASE_URL}/file/download/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Accept': 'application/json'
+                }
+            })
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
     return (
         <>
             <button className='logout' onClick={handleLogout}>Logout</button>
@@ -92,14 +100,19 @@ const Dashboard = () => {
                                     <span>{file.description}</span>
                                     <div className='file-image'>
                                         <div className='image'>
-                                            <img id={index} src={`data:image/${file?.filename?.split('.')[1]};base64,${file.myFile}`} alt="" onClick={() => handleImageClick(index)} />
+                                            <img src={`${file.file_url}`} alt="" />
                                         </div>
                                         <span className="spanner" onClick={() => showAction(!action)}>Action</span>
-                                        <div className='actions' style={{ display: action ? 'block' : 'none' }}>
-                                            <button onClick={() => handleImageClick(index)} style={{ cursor: 'pointer' }}>Preview</button>
-                                            <button onClick={() => handleShare(index, file._id)} style={{ cursor: 'pointer' }}>Share</button>
-                                            {/*<button onClick={() => handleDownload(file._id)} style={{ cursor: 'pointer' }}>Download</button>*/}
-                                            <a href="/#" id='download' onClick={handleDownload} download={download ? download : null}>Download</a>
+                                        <div className={`actions ${action ? 'show' : ''}`}>
+                                            <button onClick={() => handlePreview(file.file_url)} style={{ cursor: 'pointer' }}>Preview</button>
+                                            <button onClick={() => handleShare(file.file_url, file._id)} style={{ cursor: 'pointer' }}>
+                                                Share
+                                                <span className='count shares'>{file.emailCount}</span>
+                                            </button>
+                                            <button onClick={() => handleDownload(file._id, file.file_url)} style={{ cursor: 'pointer' }} >
+                                                Download
+                                                <span className='count downloads'>{file.downloadCount}</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -108,11 +121,13 @@ const Dashboard = () => {
                     </div>
                 </>
             </form>
+
             {fullScreenImage && (
-                <div className="fullscreen-overlay" onClick={handleCloseClick}>
-                    <img src={fullScreenImage} alt="Full Screen" className="fullscreen-image" />
+                <div className="fullscreen-overlay" onClick={() => setFullScreenImage(false)}>
+                    <img src={imageUrl} alt="Full Screen" className="fullscreen-image" />
                 </div>
             )}
+
             {shareScreen && (
                 <div className="fullscreen-share-overlay">
                     <span onClick={() => setshareScreen(!shareScreen)} className='close'>X</span>
@@ -120,10 +135,13 @@ const Dashboard = () => {
                         <h2>Share a file with your friends and network</h2>
                         <div style={{ display: 'flex', gap: 15, justifyContent: 'space-between' }}>
                             <input type="email" placeholder="Please enter reciepient's email address" value={reciepient} onChange={(e) => setReciepient(e.target.value)} />
-                            <button className='shareBtn' onClick={shareFile} >Share</button>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <button className='shareBtn' onClick={shareFile} >Share</button>
+                                <span className="loader" style={{ display: isLoading ? 'block' : 'none' }}></span>
+                            </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '20px 0' }}>
-                            <img src={`${document.getElementById(imageIndex).src}`} alt="" width={300} />
+                            <img src={imageUrl} alt="" width={300} />
                         </div>
                     </div>
                 </div>

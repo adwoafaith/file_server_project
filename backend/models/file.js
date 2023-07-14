@@ -13,7 +13,7 @@ const businessDistributionSchema = new Schema ({
     filename: {
         type: String,
     },
-    myFile:{
+    file_url:{
         type: String,
     },
     contentType: {

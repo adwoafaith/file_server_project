@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import './style.css'
 import { useNavigate } from 'react-router-dom';
 
-
 const Dashboard = () => {
     const navigate = useNavigate()
 
@@ -12,6 +11,7 @@ const Dashboard = () => {
     const [description, setDescription] = useState('')
     const [files, setFiles] = useState([])
     const [fullScreenImage, setFullScreenImage] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleImageClick = (index) => {
         const imageSrc = document.getElementById(index).src
@@ -30,23 +30,32 @@ const Dashboard = () => {
             }
         })
             .then(res => {
-                setFiles(res.data.response)
+                setFiles(res.data.response.reverse())
             })
             .catch(err => console.error(err))
     }, [])
 
     const handleSubmit = async () => {
-        const formdata = new FormData()
-        formdata.append('myFile', document.getElementById('file').files[0])
-        formdata.append('title', title)
-        formdata.append('description', description)
+        const formData = new FormData();
+        formData.append('file', document.getElementById('file').files[0]);
+        formData.append('title', title);
+        formData.append('description', description);
 
-        await axios.post(`${process.env.REACT_APP_BASE_URL}/upload/addFile`, formdata, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Accept': 'application/json'
+
+        if (title === '' && description === '' && formData.file === undefined) return alert('Empty fields')
+
+        try {
+            setIsLoading(true)
+            await axios.post(`${process.env.REACT_APP_BASE_URL}/upload/addFile`, formData, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'multipart/form-data', }
             }
-        })
+            )
+                .then(() => window.location.reload())
+                .catch(() => alert('Error uploading file'));
+        } catch (error) {
+            alert(error.message);
+            console.log(error.message)
+        }
     }
 
     const handleLogout = () => {
@@ -67,7 +76,10 @@ const Dashboard = () => {
                                 <input type="text" placeholder='Description' onChange={(e) => setDescription(e.target.value)} />
                                 <input type="file" id='file' />
                             </div>
-                            <input type="submit" id={'submit'} onClick={handleSubmit} />
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <input type="submit" id={'submit'} onClick={handleSubmit} disabled={isLoading} />
+                                <span className="loader" style={{ display: isLoading ? 'block' : 'none' }}></span>
+                            </div>
                         </div>
                         <div className='table'>
                             <div className='table-row'>
@@ -82,7 +94,7 @@ const Dashboard = () => {
                                         <span>{file.description}</span>
                                         <div className='file-image'>
                                             <div className='image'>
-                                                <img id={index} src={`data:image/${file?.filename?.split('.')[1]};base64,${file.myFile}`} alt="" onClick={() => handleImageClick(index)} />
+                                                <img id={index} src={`${file.file_url}`} alt="" onClick={() => handleImageClick(index)} />
                                             </div>
                                             <button onClick={() => handleImageClick(index)} style={{ cursor: 'pointer' }}>Preview</button>
                                         </div>

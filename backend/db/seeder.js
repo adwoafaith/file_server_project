@@ -30,15 +30,13 @@ const seedUsers = async () => {
                 };
             })
         );
-
-        // Insert seeded users into the database
         await User.insertMany(seededUsers);
 
         console.log('User seeding completed.');
-        process.exit(0);
+        return;
     } catch (error) {
         console.error('Error seeding users:', error);
-        process.exit(1);
+        return;
     }
 }
 

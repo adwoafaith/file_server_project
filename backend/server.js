@@ -1,7 +1,6 @@
 const express = require('express')
 const app = express()
 const cookieParser = require('cookie-parser')
-const connect = require('mongoose').connect
 const dbConnect = require('./db')
 const cors = require('cors')
 require('dotenv').config()
@@ -10,7 +9,6 @@ require('dotenv').config()
 const authRoute = require('./routes/auth')
 const userRoutes = require('./routes/userFileRoutes')
 const adminRoute = require('./routes/adminFileRoutes')
-const seedUsers = require('./db/seeder')
 
 //middlewares
 app.use(express.json());

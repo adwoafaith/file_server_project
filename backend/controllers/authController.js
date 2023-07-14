@@ -113,8 +113,7 @@ const forgotPassword = async (req, res) => {
             text:
                 `You or someone send a request to change your email password` +
                 `ignore of not necessary or click on the link below to reset your password:\n\n` +
-                //`http://localhost:8000/user/resetPassword/${token}\n\n`,
-                `http://localhost:3000/resetPassword/${token}\n\n`,
+                `${FRONTEND_URL}/resetPassword/${token}\n\n`,
         };
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
